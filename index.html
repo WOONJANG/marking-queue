@@ -8,23 +8,19 @@
     :root {
       --primary: #A6093D;
       --primary-dark: #850732;
-      --primary-soft: #f8d8e2;
-
       --secondary: #5BC2E7;
       --secondary-dark: #2e9fc7;
-      --secondary-soft: #dff5fc;
 
       --bg: #f7f8fc;
-      --bg-2: #fffdfb;
-      --card: rgba(255, 255, 255, 0.88);
+      --card: rgba(255, 255, 255, 0.92);
       --card-solid: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --line: rgba(31, 41, 55, 0.08);
-      --shadow-lg: 0 18px 40px rgba(47, 72, 109, 0.10);
-      --shadow-md: 0 10px 24px rgba(47, 72, 109, 0.08);
-      --radius-xl: 28px;
-      --radius-lg: 20px;
+      --shadow-lg: 0 14px 32px rgba(47, 72, 109, 0.10);
+      --shadow-md: 0 8px 20px rgba(47, 72, 109, 0.08);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
       --radius-md: 14px;
     }
 
@@ -53,14 +49,14 @@
         linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px);
       background-size: 26px 26px;
-      opacity: 0.35;
+      opacity: 0.24;
       mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.25));
     }
 
     .wrap {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 28px 20px 40px;
+      padding: 14px 14px 24px;
       position: relative;
       z-index: 1;
     }
@@ -68,36 +64,36 @@
     .hero {
       position: relative;
       overflow: hidden;
-      border-radius: 30px;
-      padding: 30px;
-      margin-bottom: 20px;
+      border-radius: 22px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
       background:
-        linear-gradient(135deg, rgba(166, 9, 61, 0.95) 0%, rgba(166, 9, 61, 0.88) 40%, rgba(91, 194, 231, 0.82) 100%);
+        linear-gradient(135deg, rgba(166, 9, 61, 0.95) 0%, rgba(166, 9, 61, 0.88) 44%, rgba(91, 194, 231, 0.82) 100%);
       color: #ffffff;
-      box-shadow: 0 24px 50px rgba(166, 9, 61, 0.16);
+      box-shadow: 0 18px 36px rgba(166, 9, 61, 0.14);
     }
 
     .hero::before {
       content: "";
       position: absolute;
-      right: -40px;
-      top: -40px;
-      width: 220px;
-      height: 220px;
+      right: -32px;
+      top: -32px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.12);
       filter: blur(2px);
     }
 
     .hero::after {
       content: "";
       position: absolute;
-      left: -60px;
-      bottom: -90px;
-      width: 240px;
-      height: 240px;
+      left: -40px;
+      bottom: -70px;
+      width: 160px;
+      height: 160px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.07);
     }
 
     .hero-inner {
@@ -105,64 +101,64 @@
       z-index: 1;
       display: flex;
       justify-content: space-between;
-      gap: 18px;
+      gap: 12px;
       flex-wrap: wrap;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .brand-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.24);
-      font-size: 12px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.22);
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
       backdrop-filter: blur(10px);
     }
 
     .brand-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #ffffff;
     }
 
     h1 {
       margin: 0;
-      font-size: 34px;
+      font-size: 24px;
       line-height: 1.15;
       letter-spacing: -0.03em;
     }
 
     .sub {
-      margin-top: 12px;
-      font-size: 14px;
-      line-height: 1.7;
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.5;
       color: rgba(255,255,255,0.92);
     }
 
     .hero-side {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     .hero-chip {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.2);
-      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px;
       font-weight: 700;
       backdrop-filter: blur(8px);
       white-space: nowrap;
@@ -172,8 +168,8 @@
       background: var(--card);
       border: 1px solid rgba(255,255,255,0.65);
       border-radius: var(--radius-xl);
-      padding: 22px;
-      margin-bottom: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
       box-shadow: var(--shadow-lg);
       backdrop-filter: blur(12px);
     }
@@ -181,23 +177,23 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
     .section-title {
       margin: 0;
-      font-size: 21px;
+      font-size: 18px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
 
     .section-sub {
-      margin-top: 6px;
+      margin-top: 5px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .search {
@@ -208,13 +204,13 @@
     }
 
     .search-box input {
-      width: 280px;
+      width: 240px;
       max-width: 100%;
-      height: 48px;
+      height: 42px;
       border: 1px solid rgba(31, 41, 55, 0.10);
       border-radius: 14px;
       padding: 0 14px;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.92);
       color: var(--text);
       outline: none;
       font-size: 14px;
@@ -233,10 +229,10 @@
     }
 
     button {
-      height: 48px;
+      height: 42px;
       border: 0;
       border-radius: 14px;
-      padding: 0 18px;
+      padding: 0 16px;
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
@@ -254,34 +250,37 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--primary) 0%, #c4114e 100%);
       color: #ffffff;
-      box-shadow: 0 12px 24px rgba(166, 9, 61, 0.20);
+      box-shadow: 0 10px 20px rgba(166, 9, 61, 0.18);
     }
 
     .stats {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 14px;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .stat {
       position: relative;
       overflow: hidden;
-      min-height: 115px;
-      padding: 18px;
-      border-radius: 22px;
+      padding: 12px 14px;
+      border-radius: 16px;
       border: 1px solid rgba(31, 41, 55, 0.06);
       background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,251,255,0.95));
       box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 84px;
     }
 
     .stat::after {
       content: "";
       position: absolute;
-      right: -18px;
-      top: -18px;
-      width: 90px;
-      height: 90px;
+      right: -12px;
+      top: -12px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
       opacity: 0.12;
     }
@@ -299,17 +298,20 @@
     }
 
     .stat-label {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
+      white-space: nowrap;
     }
 
     .stat b {
       display: block;
-      font-size: 32px;
+      font-size: 24px;
       line-height: 1;
       letter-spacing: -0.04em;
+      position: relative;
+      z-index: 1;
     }
 
     .stat.total b {
@@ -325,17 +327,17 @@
     }
 
     .updated {
-      margin-top: 14px;
+      margin-top: 12px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 999px;
       background: #ffffff;
       border: 1px solid rgba(31,41,55,0.06);
-      box-shadow: 0 6px 16px rgba(47,72,109,0.06);
+      box-shadow: 0 6px 14px rgba(47,72,109,0.06);
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .pulse {
@@ -354,8 +356,8 @@
     }
 
     .table-wrap {
-      overflow-x: auto;
-      border-radius: 20px;
+      overflow-x: hidden;
+      border-radius: 18px;
       border: 1px solid rgba(31,41,55,0.06);
       background: #ffffff;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
@@ -364,18 +366,19 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 720px;
+      table-layout: fixed;
     }
 
     thead th {
-      padding: 16px 14px;
-      text-align: left;
-      font-size: 13px;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 12px;
       font-weight: 800;
       color: #5b6474;
       background: linear-gradient(180deg, #fdfdff, #f6f8fc);
       border-bottom: 1px solid rgba(31,41,55,0.07);
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
+      word-break: keep-all;
     }
 
     tbody tr {
@@ -391,10 +394,12 @@
     }
 
     th, td {
-      padding: 16px 14px;
+      padding: 12px 8px;
       border-bottom: 1px solid rgba(31,41,55,0.06);
-      font-size: 15px;
+      font-size: 13px;
       vertical-align: middle;
+      text-align: center;
+      word-break: keep-all;
     }
 
     tbody tr:last-child td {
@@ -402,31 +407,37 @@
     }
 
     .big-number {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 900;
       color: var(--primary);
       letter-spacing: -0.03em;
+      white-space: nowrap;
     }
 
     .name-cell {
       font-weight: 700;
       color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .phone-cell {
       color: #475569;
       font-family: "Consolas", "SFMono-Regular", monospace;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      font-size: 12px;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 74px;
-      padding: 8px 12px;
+      min-width: 60px;
+      padding: 6px 8px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       border: 1px solid transparent;
       white-space: nowrap;
@@ -447,7 +458,69 @@
     .muted {
       color: var(--muted);
       text-align: center;
-      padding: 28px 16px;
+      padding: 20px 12px;
+    }
+
+    .mobile-list {
+      display: none;
+    }
+
+    .mobile-item {
+      background: #ffffff;
+      border: 1px solid rgba(31,41,55,0.06);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 14px rgba(47, 72, 109, 0.06);
+    }
+
+    .mobile-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .mobile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .mobile-number {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .mobile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mobile-box {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid rgba(31,41,55,0.05);
+    }
+
+    .mobile-label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .mobile-value {
+      display: block;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 800;
+      word-break: break-word;
     }
 
     .foot-note {
@@ -462,7 +535,7 @@
       text-align: center;
       color: #7b8797;
       font-size: 13px;
-      padding: 12px 0 4px;
+      padding: 10px 0 2px;
       letter-spacing: 0.02em;
     }
 
@@ -473,38 +546,39 @@
 
     @media (max-width: 900px) {
       .hero {
-        padding: 24px 20px;
+        padding: 14px 16px;
       }
 
       h1 {
-        font-size: 28px;
+        font-size: 22px;
       }
 
       .hero-side {
         align-items: flex-start;
       }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 640px) {
       .wrap {
-        padding: 16px 14px 28px;
+        padding: 12px 12px 22px;
       }
 
       .card {
-        padding: 16px;
-        border-radius: 22px;
+        padding: 14px;
+        border-radius: 20px;
       }
 
       .hero {
-        border-radius: 24px;
+        border-radius: 20px;
+        padding: 14px;
       }
 
       h1 {
-        font-size: 24px;
+        font-size: 20px;
+      }
+
+      .sub {
+        font-size: 12px;
       }
 
       .search {
@@ -517,8 +591,39 @@
         width: 100%;
       }
 
-      .big-number {
-        font-size: 20px;
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .stat {
+        min-height: 72px;
+        padding: 10px 8px;
+        border-radius: 14px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        margin-bottom: 4px;
+        text-align: center;
+      }
+
+      .stat b {
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-list {
+        display: block;
+      }
+
+      .hero-chip {
+        font-size: 11px;
+        padding: 7px 10px;
       }
     }
   </style>
@@ -534,8 +639,7 @@
           </div>
           <h1>용인 FC MIREU STORE 마킹 조회</h1>
           <div class="sub">
-            대기번호 기준으로 현재 마킹 진행 상태를 확인할 수 있습니다.<br>
-            이름과 전화번호는 개인정보 보호를 위해 일부 마스킹되어 표시됩니다.
+            대기번호 기준으로 현재 마킹 진행 상태를 확인할 수 있습니다.
           </div>
         </div>
 
@@ -590,6 +694,12 @@
     <section class="card">
       <div class="table-wrap">
         <table>
+          <colgroup>
+            <col style="width: 24%">
+            <col style="width: 22%">
+            <col style="width: 30%">
+            <col style="width: 24%">
+          </colgroup>
           <thead>
             <tr>
               <th>대기번호</th>
@@ -602,6 +712,10 @@
             <tr><td colspan="4" class="muted">데이터를 불러오는 중...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div id="mobileList" class="mobile-list">
+        <div class="muted">데이터를 불러오는 중...</div>
       </div>
 
       <div class="foot-note">
@@ -650,6 +764,8 @@
       script.onerror = function () {
         document.getElementById('queueBody').innerHTML =
           '<tr><td colspan="4" class="muted">데이터를 불러오지 못했습니다.</td></tr>';
+        document.getElementById('mobileList').innerHTML =
+          '<div class="muted">데이터를 불러오지 못했습니다.</div>';
         delete window[callbackName];
       };
 
@@ -673,6 +789,7 @@
     function applyFilter() {
       const keyword = document.getElementById('searchInput').value.trim();
       const body = document.getElementById('queueBody');
+      const mobileList = document.getElementById('mobileList');
 
       const filtered = allItems.filter(item => {
         if (!keyword) return true;
@@ -681,6 +798,7 @@
 
       if (!filtered.length) {
         body.innerHTML = '<tr><td colspan="4" class="muted">검색 결과가 없습니다.</td></tr>';
+        mobileList.innerHTML = '<div class="muted">검색 결과가 없습니다.</div>';
         return;
       }
 
@@ -693,6 +811,28 @@
             <td class="phone-cell">${escapeHtml(item.phoneMasked)}</td>
             <td><span class="badge ${statusClass}">${escapeHtml(item.status)}</span></td>
           </tr>
+        `;
+      }).join('');
+
+      mobileList.innerHTML = filtered.map(item => {
+        const statusClass = item.status === '완료' ? 'done' : 'waiting';
+        return `
+          <div class="mobile-item">
+            <div class="mobile-top">
+              <div class="mobile-number">${escapeHtml(item.queueNo)}</div>
+              <span class="badge ${statusClass}">${escapeHtml(item.status)}</span>
+            </div>
+            <div class="mobile-grid">
+              <div class="mobile-box">
+                <span class="mobile-label">이름</span>
+                <span class="mobile-value">${escapeHtml(item.nameMasked)}</span>
+              </div>
+              <div class="mobile-box">
+                <span class="mobile-label">전화번호 뒤 4자리</span>
+                <span class="mobile-value">${escapeHtml(item.phoneMasked)}</span>
+              </div>
+            </div>
+          </div>
         `;
       }).join('');
     }
