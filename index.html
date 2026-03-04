@@ -726,8 +726,8 @@
     </section>
 
     <footer class="footer">
-      made by <a href="https://script.google.com/macros/s/AKfycbz1_byh9kSTIm6Yw5ncGMTMoKMm0a64CjH4b6Pu7Y1fwswspPdD_YK9qkA4dxPCCPo/exec?page=admin" style="text-decoration: none;" target="_blank" rel="noopener noreferrer"><b>WOONIVERSE.</b> </a>
-    </footer>
+  made by <b id="adminTrigger" style="cursor: pointer;">WOONIVERSE.</b>
+</footer>
   </div>
 
   <script>
@@ -847,6 +847,31 @@
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
     }
+
+  const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbz1_byh9kSTIm6Yw5ncGMTMoKMm0a64CjH4b6Pu7Y1fwswspPdD_YK9qkA4dxPCCPo/exec?page=admin';
+
+  let adminClickCount = 0;
+  let adminClickTimer = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const adminTrigger = document.getElementById('adminTrigger');
+    if (!adminTrigger) return;
+
+    adminTrigger.addEventListener('click', () => {
+      adminClickCount++;
+
+      if (adminClickTimer) clearTimeout(adminClickTimer);
+
+      adminClickTimer = setTimeout(() => {
+        adminClickCount = 0;
+      }, 2000); // 2초 안에 5번 클릭해야 인정
+
+      if (adminClickCount >= 5) {
+        adminClickCount = 0;
+        window.location.href = ADMIN_URL;
+      }
+    });
+  });
   </script>
 </body>
 </html>
