@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마킹 완료 조회</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+    .sub {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .search input {
+      width: 260px;
+      max-width: 100%;
+      height: 42px;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 0 12px;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #22c55e;
+      color: #052e16;
+    }
+    .stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .stat {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      min-width: 120px;
+    }
+    .stat b {
+      display: block;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: left;
+      font-size: 15px;
+    }
+    th {
+      color: #cbd5e1;
+      background: rgba(255,255,255,0.02);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .waiting {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .done {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .muted {
+      color: #94a3b8;
+    }
+    .updated {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .big-number {
+      font-size: 22px;
+      font-weight: 800;
+    }
+    @media (max-width: 768px) {
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h1>마킹 완료 조회</h1>
+          <div class="sub">이름과 전화번호는 일부 마스킹되어 표시됩니다.</div>
+        </div>
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="대기번호 검색" oninput="applyFilter()">
+          <button onclick="refreshList()">새로고침</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">전체<b id="statTotal">0</b></div>
+        <div class="stat">대기중<b id="statWaiting">0</b></div>
+        <div class="stat">완료<b id="statDone">0</b></div>
+      </div>
+
+      <div class="updated">마지막 업데이트: <span id="updatedAt">-</span></div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>대기번호</th>
+              <th>이름</th>
+              <th>전화번호 뒤4자리</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="queueBody">
+            <tr><td colspan="4" class="muted">데이터를 불러오는 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PUBLIC_API_URL = '여기에_앱스스크립트_배포_URL?mode=public';
+
+    let allItems = [];
+    let refreshTimer = null;
+
+    window.addEventListener('load', () => {
+      refreshList();
+      startAutoRefresh();
+    });
+
+    function startAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(refreshList, 5000);
+    }
+
+    function refreshList() {
+      const callbackName = '__queueCallback_' + Date.now();
+
+      window[callbackName] = function (data) {
+        try {
+          allItems = (data && data.items) ? data.items : [];
+          renderStats();
+          applyFilter();
+          document.getElementById('updatedAt').textContent =
+            (data && data.updatedAt) ? data.updatedAt : new Date().toLocaleString('ko-KR');
+        } finally {
+          delete window[callbackName];
+        }
+      };
+
+      const script = document.createElement('script');
+      script.src = `${PUBLIC_API_URL}&callback=${callbackName}&_=${Date.now()}`;
+      script.onerror = function () {
+        document.getElementById('queueBody').innerHTML =
+          '<tr><td colspan="4" class="muted">데이터를 불러오지 못했습니다.</td></tr>';
+        delete window[callbackName];
+      };
+
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }, 5000);
+    }
+
+    function renderStats() {
+      const total = allItems.length;
+      const waiting = allItems.filter(item => item.status === '대기중').length;
+      const done = allItems.filter(item => item.status === '완료').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statWaiting').textContent = waiting;
+      document.getElementById('statDone').textContent = done;
+    }
+
+    function applyFilter() {
+      const keyword = document.getElementById('searchInput').value.trim();
+      const body = document.getElementById('queueBody');
+
+      const filtered = allItems.filter(item => {
+        if (!keyword) return true;
+        return String(item.queueNo).includes(keyword);
+      });
+
+      if (!filtered.length) {
+        body.innerHTML = '<tr><td colspan="4" class="muted">검색 결과가 없습니다.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = filtered.map(item => {
+        const statusClass = item.status === '완료' ? 'done' : 'waiting';
+        return `
+          <tr>
+            <td class="big-number">${escapeHtml(item.queueNo)}</td>
+            <td>${escapeHtml(item.nameMasked)}</td>
+            <td>${escapeHtml(item.phoneMasked)}</td>
+            <td><span class="badge ${statusClass}">${escapeHtml(item.status)}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>
