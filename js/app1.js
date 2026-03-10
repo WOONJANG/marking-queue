@@ -1,5 +1,5 @@
-const PUBLIC_API_URL = 'https://script.google.com/macros/s/AKfycbx1oqCfIdL1om_gvIjEQqTFnNHSuYdQv24PFxa-NnaONgjcrDWQRMa-2aMTzrV4Y3A/exec?mode=public';
-const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbx1oqCfIdL1om_gvIjEQqTFnNHSuYdQv24PFxa-NnaONgjcrDWQRMa-2aMTzrV4Y3A/exec?page=admin';
+const PUBLIC_API_URL = 'https://script.google.com/macros/s/AKfycbzIKw_FIY2B5AzJkqXRi8iHCYfH33OdvJZre0jkMsSmf4mcDuk7e99szNwa6mmHsaI/exec?mode=public';
+const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbzIKw_FIY2B5AzJkqXRi8iHCYfH33OdvJZre0jkMsSmf4mcDuk7e99szNwa6mmHsaI/exec?page=admin';
 
 let allItems = [];
 let refreshTimer = null;
@@ -33,6 +33,7 @@ function bindEvents() {
 
 function handleSearchInput() {
   if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+
   searchDebounceTimer = setTimeout(() => {
     refreshList();
   }, 250);
