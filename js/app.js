@@ -1,5 +1,5 @@
-const PUBLIC_API_URL = 'https://script.google.com/macros/s/AKfycbz1_byh9kSTIm6Yw5ncGMTMoKMm0a64CjH4b6Pu7Y1fwswspPdD_YK9qkA4dxPCCPo/exec?mode=public';
-const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbz1_byh9kSTIm6Yw5ncGMTMoKMm0a64CjH4b6Pu7Y1fwswspPdD_YK9qkA4dxPCCPo/exec?page=admin';
+const PUBLIC_API_URL = 'https://script.google.com/macros/s/AKfycbzH9kwXG8F-N7VMS7LYEIrvpBQd-ltr0mkEXN8e9uM5vHVHGm8ZxT-WT9tvgPDpyOc/exec?mode=public';
+const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbzH9kwXG8F-N7VMS7LYEIrvpBQd-ltr0mkEXN8e9uM5vHVHGm8ZxT-WT9tvgPDpyOc/exec?page=admin';
 
 let allItems = [];
 let refreshTimer = null;
