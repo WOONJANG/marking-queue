@@ -5,6 +5,7 @@ let allItems = [];
 let refreshTimer = null;
 let adminClickCount = 0;
 let adminClickTimer = null;
+let searchDebounceTimer = null;
 
 window.addEventListener('load', () => {
   bindEvents();
@@ -18,7 +19,7 @@ function bindEvents() {
   const adminTrigger = document.getElementById('adminTrigger');
 
   if (searchInput) {
-    searchInput.addEventListener('input', applyFilter);
+    searchInput.addEventListener('input', handleSearchInput);
   }
 
   if (refreshBtn) {
@@ -30,19 +31,28 @@ function bindEvents() {
   }
 }
 
+function handleSearchInput() {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    refreshList();
+  }, 250);
+}
+
 function startAutoRefresh() {
   if (refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(refreshList, 5000);
 }
 
 function refreshList() {
+  const searchInput = document.getElementById('searchInput');
+  const keyword = searchInput ? searchInput.value.trim() : '';
   const callbackName = '__queueCallback_' + Date.now();
 
   window[callbackName] = function (data) {
     try {
       allItems = (data && data.items) ? data.items : [];
       renderStats();
-      applyFilter();
+      renderList(allItems);
       document.getElementById('updatedAt').textContent =
         (data && data.updatedAt) ? data.updatedAt : new Date().toLocaleString('ko-KR');
     } finally {
@@ -51,7 +61,7 @@ function refreshList() {
   };
 
   const script = document.createElement('script');
-  script.src = `${PUBLIC_API_URL}&callback=${callbackName}&_=${Date.now()}`;
+  script.src = `${PUBLIC_API_URL}&q=${encodeURIComponent(keyword)}&callback=${callbackName}&_=${Date.now()}`;
 
   script.onerror = function () {
     document.getElementById('queueBody').innerHTML =
@@ -80,23 +90,17 @@ function renderStats() {
   document.getElementById('statDone').textContent = done;
 }
 
-function applyFilter() {
-  const keyword = document.getElementById('searchInput').value.trim();
+function renderList(items) {
   const body = document.getElementById('queueBody');
   const mobileList = document.getElementById('mobileList');
 
-  const filtered = allItems.filter(item => {
-    if (!keyword) return true;
-    return String(item.queueNo).includes(keyword);
-  });
-
-  if (!filtered.length) {
+  if (!items.length) {
     body.innerHTML = '<tr><td colspan="4" class="muted">검색 결과가 없습니다.</td></tr>';
     mobileList.innerHTML = '<div class="muted">검색 결과가 없습니다.</div>';
     return;
   }
 
-  body.innerHTML = filtered.map(item => {
+  body.innerHTML = items.map(item => {
     const statusClass = item.status === '완료' ? 'done' : 'waiting';
     return `
       <tr>
@@ -108,7 +112,7 @@ function applyFilter() {
     `;
   }).join('');
 
-  mobileList.innerHTML = filtered.map(item => {
+  mobileList.innerHTML = items.map(item => {
     const statusClass = item.status === '완료' ? 'done' : 'waiting';
     return `
       <div class="mobile-item">
