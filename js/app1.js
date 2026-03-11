@@ -1,4 +1,4 @@
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwU7bOE5_S4grCjPVEru5eEJmLPEi85KEHAQYbffipflEPihahCbfj37Sur2aDMc_Q/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx6FXmcazP9rq93YVgWTBJntVDPD5wzzuabFA6vHtJszaNQYXVg1vleCFaUMDG8xwc/exec';
 const PUBLIC_API_URL = SHEET_URL + '?mode=public';
 const ADMIN_URL = SHEET_URL + '?page=admin';
 
