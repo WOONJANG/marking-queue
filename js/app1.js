@@ -9,20 +9,21 @@ var adminClickTimer = null;
 var searchDebounceTimer = null;
 var activeJsonpScript = null;
 var activeJsonpTimer = null;
-
-function onReady(fn) {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', fn);
-  } else {
-    fn();
-  }
-}
+var hasLoadedOnce = false;
 
 onReady(function () {
   bindEvents();
-  refreshList();
+  refreshList({ silent: false });
   startAutoRefresh();
 });
+
+function onReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback();
+  }
+}
 
 function bindEvents() {
   var searchInput = document.getElementById('searchInput');
@@ -35,27 +36,18 @@ function bindEvents() {
 
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function (e) {
-      if (e) e.preventDefault();
-      refreshList();
-    });
-    refreshBtn.addEventListener('touchend', function (e) {
-      if (e) {
+      if (e && typeof e.preventDefault === 'function') {
         e.preventDefault();
-        if (e.stopPropagation) e.stopPropagation();
       }
-      refreshList();
+      refreshList({ silent: true });
     });
   }
 
   if (adminTrigger) {
-    adminTrigger.addEventListener('click', function (e) {
-      if (e) e.preventDefault();
-      handleAdminTriggerClick();
-    });
+    adminTrigger.addEventListener('click', handleAdminTriggerClick);
     adminTrigger.addEventListener('touchend', function (e) {
-      if (e) {
+      if (e && typeof e.preventDefault === 'function') {
         e.preventDefault();
-        if (e.stopPropagation) e.stopPropagation();
       }
       handleAdminTriggerClick();
     });
@@ -68,7 +60,7 @@ function handleSearchInput() {
   }
 
   searchDebounceTimer = setTimeout(function () {
-    refreshList();
+    refreshList({ silent: true });
   }, 250);
 }
 
@@ -76,17 +68,32 @@ function startAutoRefresh() {
   if (refreshTimer) {
     clearInterval(refreshTimer);
   }
-  refreshTimer = setInterval(refreshList, 5000);
+
+  refreshTimer = setInterval(function () {
+    refreshList({ silent: true });
+  }, 5000);
 }
 
-function refreshList() {
+function refreshList(options) {
+  options = options || {};
+
   var searchInput = document.getElementById('searchInput');
   var keyword = searchInput ? trimSafe(searchInput.value) : '';
   var callbackName = '__queueCallback_' + new Date().getTime();
   var body = document.getElementById('queueBody');
   var mobileList = document.getElementById('mobileList');
+  var updatedAt = document.getElementById('updatedAt');
 
   cleanupJsonp();
+
+  if (!options.silent && !hasLoadedOnce) {
+    if (body) {
+      body.innerHTML = '<tr><td colspan="4" class="muted">데이터를 불러오는 중...</td></tr>';
+    }
+    if (mobileList) {
+      mobileList.innerHTML = '<div class="muted">데이터를 불러오는 중...</div>';
+    }
+  }
 
   window[callbackName] = function (data) {
     try {
@@ -94,46 +101,37 @@ function refreshList() {
       renderStats();
       renderList(allItems);
 
-      var updatedAt = document.getElementById('updatedAt');
       if (updatedAt) {
         updatedAt.textContent = data && data.updatedAt ? data.updatedAt : formatNow();
       }
+
+      hasLoadedOnce = true;
     } catch (err) {
       showLoadError('데이터 표시 중 오류가 발생했습니다.');
     } finally {
-      try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+      safeDeleteCallback(callbackName);
       cleanupJsonp();
     }
   };
 
-  if (body) {
-    body.innerHTML = '<tr><td colspan="4" class="muted">데이터를 불러오는 중...</td></tr>';
-  }
-  if (mobileList) {
-    mobileList.innerHTML = '<div class="muted">데이터를 불러오는 중...</div>';
-  }
-
-  var script = document.createElement('script');
-  script.async = true;
-  script.src = PUBLIC_API_URL
+  activeJsonpScript = document.createElement('script');
+  activeJsonpScript.async = true;
+  activeJsonpScript.src = PUBLIC_API_URL
     + '&q=' + encodeURIComponent(keyword)
     + '&callback=' + encodeURIComponent(callbackName)
     + '&_=' + new Date().getTime();
 
-  script.onerror = function () {
-    try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+  activeJsonpScript.onerror = function () {
+    safeDeleteCallback(callbackName);
     showLoadError('데이터를 불러오지 못했습니다.');
     cleanupJsonp();
   };
 
-  activeJsonpScript = script;
-  (document.body || document.documentElement).appendChild(script);
+  (document.body || document.documentElement).appendChild(activeJsonpScript);
 
   activeJsonpTimer = setTimeout(function () {
-    if (typeof window[callbackName] === 'function') {
-      try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
-      showLoadError('응답 시간이 초과되었습니다.');
-    }
+    safeDeleteCallback(callbackName);
+    showLoadError('응답 시간이 초과되었습니다.');
     cleanupJsonp();
   }, 7000);
 }
@@ -147,19 +145,15 @@ function cleanupJsonp() {
   if (activeJsonpScript && activeJsonpScript.parentNode) {
     activeJsonpScript.parentNode.removeChild(activeJsonpScript);
   }
+
   activeJsonpScript = null;
 }
 
-function showLoadError(message) {
-  var body = document.getElementById('queueBody');
-  var mobileList = document.getElementById('mobileList');
-  var text = message || '데이터를 불러오지 못했습니다.';
-
-  if (body) {
-    body.innerHTML = '<tr><td colspan="4" class="muted">' + escapeHtml(text) + '</td></tr>';
-  }
-  if (mobileList) {
-    mobileList.innerHTML = '<div class="muted">' + escapeHtml(text) + '</div>';
+function safeDeleteCallback(callbackName) {
+  try {
+    delete window[callbackName];
+  } catch (e) {
+    window[callbackName] = void 0;
   }
 }
 
@@ -168,76 +162,96 @@ function renderStats() {
   var waiting = 0;
   var done = 0;
   var i;
+  var status;
 
-  for (i = 0; i < allItems.length; i += 1) {
-    if (allItems[i] && allItems[i].status === '완료') {
-      done += 1;
-    } else {
-      waiting += 1;
+  for (i = 0; i < allItems.length; i++) {
+    status = allItems[i] && allItems[i].status;
+    if (status === '대기중') {
+      waiting++;
+    } else if (status === '완료') {
+      done++;
     }
   }
 
-  setText('statTotal', total);
-  setText('statWaiting', waiting);
-  setText('statDone', done);
+  setText('statTotal', String(total));
+  setText('statWaiting', String(waiting));
+  setText('statDone', String(done));
 }
 
 function renderList(items) {
   var body = document.getElementById('queueBody');
   var mobileList = document.getElementById('mobileList');
   var i;
-  var html = '';
-  var mobileHtml = '';
   var item;
   var statusClass;
-
-  if (!body || !mobileList) {
-    return;
-  }
+  var rows = [];
+  var cards = [];
 
   if (!items || !items.length) {
-    body.innerHTML = '<tr><td colspan="4" class="muted">검색 결과가 없습니다.</td></tr>';
-    mobileList.innerHTML = '<div class="muted">검색 결과가 없습니다.</div>';
+    if (body) {
+      body.innerHTML = '<tr><td colspan="4" class="muted">검색 결과가 없습니다.</td></tr>';
+    }
+    if (mobileList) {
+      mobileList.innerHTML = '<div class="muted">검색 결과가 없습니다.</div>';
+    }
     return;
   }
 
-  for (i = 0; i < items.length; i += 1) {
+  for (i = 0; i < items.length; i++) {
     item = items[i] || {};
     statusClass = item.status === '완료' ? 'done' : 'waiting';
 
-    html += ''
-      + '<tr>'
-      + '<td class="big-number">' + escapeHtml(item.queueNo) + '</td>'
-      + '<td class="name-cell">' + escapeHtml(item.nameMasked) + '</td>'
-      + '<td class="phone-cell">' + escapeHtml(item.phoneMasked) + '</td>'
-      + '<td><span class="badge ' + statusClass + '">' + escapeHtml(item.status) + '</span></td>'
-      + '</tr>';
+    rows.push(
+      '<tr>' +
+        '<td class="big-number">' + escapeHtml(item.queueNo) + '</td>' +
+        '<td class="name-cell">' + escapeHtml(item.nameMasked) + '</td>' +
+        '<td class="phone-cell">' + escapeHtml(item.phoneMasked) + '</td>' +
+        '<td><span class="badge ' + statusClass + '">' + escapeHtml(item.status) + '</span></td>' +
+      '</tr>'
+    );
 
-    mobileHtml += ''
-      + '<div class="mobile-item">'
-      + '<div class="mobile-top">'
-      + '<div class="mobile-number">' + escapeHtml(item.queueNo) + '</div>'
-      + '<span class="badge ' + statusClass + '">' + escapeHtml(item.status) + '</span>'
-      + '</div>'
-      + '<div class="mobile-grid">'
-      + '<div class="mobile-box">'
-      + '<span class="mobile-label">이름</span>'
-      + '<span class="mobile-value">' + escapeHtml(item.nameMasked) + '</span>'
-      + '</div>'
-      + '<div class="mobile-box">'
-      + '<span class="mobile-label">전화번호 뒤 4자리</span>'
-      + '<span class="mobile-value">' + escapeHtml(item.phoneMasked) + '</span>'
-      + '</div>'
-      + '</div>'
-      + '</div>';
+    cards.push(
+      '<div class="mobile-item">' +
+        '<div class="mobile-top">' +
+          '<div class="mobile-number">' + escapeHtml(item.queueNo) + '</div>' +
+          '<span class="badge ' + statusClass + '">' + escapeHtml(item.status) + '</span>' +
+        '</div>' +
+        '<div class="mobile-grid">' +
+          '<div class="mobile-box">' +
+            '<span class="mobile-label">이름</span>' +
+            '<span class="mobile-value">' + escapeHtml(item.nameMasked) + '</span>' +
+          '</div>' +
+          '<div class="mobile-box">' +
+            '<span class="mobile-label">전화번호 뒤 4자리</span>' +
+            '<span class="mobile-value">' + escapeHtml(item.phoneMasked) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
   }
 
-  body.innerHTML = html;
-  mobileList.innerHTML = mobileHtml;
+  if (body) {
+    body.innerHTML = rows.join('');
+  }
+  if (mobileList) {
+    mobileList.innerHTML = cards.join('');
+  }
+}
+
+function showLoadError(message) {
+  var body = document.getElementById('queueBody');
+  var mobileList = document.getElementById('mobileList');
+
+  if (body) {
+    body.innerHTML = '<tr><td colspan="4" class="muted">' + escapeHtml(message) + '</td></tr>';
+  }
+  if (mobileList) {
+    mobileList.innerHTML = '<div class="muted">' + escapeHtml(message) + '</div>';
+  }
 }
 
 function handleAdminTriggerClick() {
-  adminClickCount += 1;
+  adminClickCount++;
 
   if (adminClickTimer) {
     clearTimeout(adminClickTimer);
@@ -253,6 +267,15 @@ function handleAdminTriggerClick() {
   }
 }
 
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function trimSafe(value) {
   return String(value == null ? '' : value).replace(/^\s+|\s+$/g, '');
 }
@@ -265,26 +288,9 @@ function setText(id, value) {
 }
 
 function formatNow() {
-  var d = new Date();
-  var y = d.getFullYear();
-  var m = pad2(d.getMonth() + 1);
-  var day = pad2(d.getDate());
-  var h = pad2(d.getHours());
-  var min = pad2(d.getMinutes());
-  var s = pad2(d.getSeconds());
-  return y + '-' + m + '-' + day + ' ' + h + ':' + min + ':' + s;
-}
-
-function pad2(n) {
-  n = Number(n) || 0;
-  return n < 10 ? '0' + n : '' + n;
-}
-
-function escapeHtml(value) {
-  return String(value == null ? '' : value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  try {
+    return new Date().toLocaleString('ko-KR');
+  } catch (e) {
+    return new Date().toString();
+  }
 }
